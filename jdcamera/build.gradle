@@ -61,11 +61,11 @@ artifacts {
 install {
     repositories.mavenInstaller {
         pom.project {
-            name 'JD Camera'
+            name 'jdcamera'
             description 'JD Camera Android'
             url 'https://github.com/Jelp/JDCamera'
             groupId 'io.jelp'
-            artifactId 'JDCamera'
+            artifactId 'jdcamera'
             version '0.1'
 
             licenses {
@@ -95,7 +95,7 @@ bintray {
     pkg {
         repo = "maven"
         // it is the name that appears in bintray when logged
-        name = "JDCamera" // TODO
+        name = "jdcamera" // TODO
         userOrg = 'jelp-app'
         licenses = ["Apache-2.0"]
         publish true
