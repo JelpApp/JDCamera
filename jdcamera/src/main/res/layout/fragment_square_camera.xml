@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <io.jelp.jdcamera.controls.SquareCameraPreview
+        android:id="@+id/camera_preview_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+    <View
+        android:id="@+id/cover_top_view"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/cover_start_height"
+        android:layout_alignTop="@id/camera_preview_view"
+        android:background="@android:color/black"/>
+
+    <View
+        android:id="@+id/cover_bottom_view"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/cover_start_height"
+        android:layout_alignBottom="@id/camera_preview_view"
+        android:background="@android:color/black"/>
+
+    <TextView
+        android:id="@+id/txtMsj"
+        android:layout_margin="5dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:textColor="#FFE6E6E6"
+        android:textSize="16sp"/>
+
+    <LinearLayout
+        android:id="@+id/camera_tools_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/camera_preview_view"
+        android:layout_alignParentBottom="true"
+        android:padding="10dp"
+        android:orientation="horizontal"
+        android:background="@android:color/black"
+        android:gravity="center">
+
+        <ImageView
+            android:id="@+id/change_camera"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:srcCompat="@drawable/ic_camera_rear"
+            android:layout_weight="1"/>
+
+        <ImageView
+            android:id="@+id/capture_image_button"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            android:background="@drawable/bg_camera"
+            app:srcCompat="@drawable/ic_camera"
+            android:padding="19dp"/>
+
+        <LinearLayout
+            android:id="@+id/flash"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center_horizontal"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:id="@+id/flash_icon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:srcCompat="@drawable/ic_flash" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+</RelativeLayout>
