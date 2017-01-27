@@ -6,14 +6,13 @@ if (project.rootProject.file('local.properties').exists()) {
     properties.load(project.rootProject.file('local.properties').newDataInputStream())
 }
 android {
-    compileSdkVersion 25
-    buildToolsVersion "25.0.2"
-
+    compileSdkVersion 23
+    buildToolsVersion "23.0.2"
     defaultConfig {
         minSdkVersion 19
-        targetSdkVersion 25
+        targetSdkVersion 23
         versionCode 1
-        versionName "0.3"
+        versionName "0.4"
         vectorDrawables.useSupportLibrary = true
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
@@ -30,12 +29,12 @@ dependencies {
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
-    compile 'com.android.support:appcompat-v7:25.1.0'
+    compile 'com.android.support:appcompat-v7:23.3.0'
     testCompile 'junit:junit:4.12'
 }
 
 group = 'io.jelp' // Change this to match your package name
-version = '0.3' // Change this to match your version number
+version = '0.4' // Change this to match your version number
 
 task sourcesJar(type: Jar) {
     from android.sourceSets.main.java.srcDirs
@@ -64,7 +63,7 @@ install {
             url 'https://github.com/Jelp/JDCamera'
             groupId 'io.jelp'
             artifactId 'jdcamera'
-            version '0.3'
+            version '0.4'
 
             licenses {
                 license {
@@ -98,9 +97,9 @@ bintray {
         licenses = ["Apache-2.0"]
         publish true
         version {
-            name = '0.3'
+            name = '0.4'
             desc = 'JD Camera Android'
-            vcsTag = '0.3'
+            vcsTag = '0.4'
             attributes = ['gradle-plugin': 'com.use.less:com.use.less.gradle:gradle-useless-plugin']
         }
     }
