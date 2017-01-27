@@ -12,7 +12,7 @@ android {
         minSdkVersion 19
         targetSdkVersion 23
         versionCode 1
-        versionName "0.4"
+        versionName "0.5"
         vectorDrawables.useSupportLibrary = true
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
@@ -34,7 +34,7 @@ dependencies {
 }
 
 group = 'io.jelp' // Change this to match your package name
-version = '0.4' // Change this to match your version number
+version = '0.5' // Change this to match your version number
 
 task sourcesJar(type: Jar) {
     from android.sourceSets.main.java.srcDirs
@@ -63,7 +63,7 @@ install {
             url 'https://github.com/Jelp/JDCamera'
             groupId 'io.jelp'
             artifactId 'jdcamera'
-            version '0.4'
+            version '0.5'
 
             licenses {
                 license {
@@ -97,9 +97,9 @@ bintray {
         licenses = ["Apache-2.0"]
         publish true
         version {
-            name = '0.4'
+            name = '0.5'
             desc = 'JD Camera Android'
-            vcsTag = '0.4'
+            vcsTag = '0.5'
             attributes = ['gradle-plugin': 'com.use.less:com.use.less.gradle:gradle-useless-plugin']
         }
     }

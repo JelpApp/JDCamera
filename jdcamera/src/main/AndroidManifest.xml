@@ -5,6 +5,7 @@
         <activity
             android:name=".RuntimePermissionActivity"
             android:theme="@style/CameraTheme.NoUI"></activity>
+        <activity android:name=".CameraActivity"></activity>
     </application>
 
 </manifest>
