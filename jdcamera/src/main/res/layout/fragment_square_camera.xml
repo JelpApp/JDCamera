@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto">
@@ -26,12 +25,25 @@
 
     <TextView
         android:id="@+id/txtMsj"
-        android:layout_margin="5dp"
+        android:layout_marginBottom="16dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_above="@+id/camera_tools_view"
         android:gravity="center"
-        android:textColor="#FFE6E6E6"
+        android:textColor="#f2f2f2"
         android:textSize="16sp"/>
+
+    <ImageView
+        android:id="@+id/flash"
+        android:layout_alignParentRight="true"
+        android:layout_margin="16dp"
+        android:layout_width="35dp"
+        android:layout_height="wrap_content"
+        android:adjustViewBounds="true"
+        android:clickable="true"
+        android:focusable="true"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        app:srcCompat="@drawable/ic_flash" />
 
     <LinearLayout
         android:id="@+id/camera_tools_view"
@@ -44,34 +56,53 @@
         android:background="@android:color/black"
         android:gravity="center">
 
-        <ImageView
-            android:id="@+id/change_camera"
+        <LinearLayout
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            app:srcCompat="@drawable/ic_camera_rear"
-            android:layout_weight="1"/>
+            android:layout_weight="1"
+            android:gravity="center"
+            android:layout_height="match_parent">
 
-        <ImageView
-            android:id="@+id/capture_image_button"
-            android:layout_width="70dp"
-            android:layout_height="70dp"
-            android:background="@drawable/bg_camera"
-            app:srcCompat="@drawable/ic_camera"
-            android:padding="19dp"/>
+            <ImageView
+                android:id="@+id/change_camera"
+                android:layout_width="35dp"
+                android:layout_height="wrap_content"
+                android:adjustViewBounds="true"
+                android:clickable="true"
+                android:focusable="true"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                app:srcCompat="@drawable/ic_camera_rear" />
+        </LinearLayout>
 
         <LinearLayout
-            android:id="@+id/flash"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            android:background="@drawable/bg_camera">
+
+            <ImageView
+                android:id="@+id/capture_image_button"
+                android:layout_width="70dp"
+                android:layout_height="70dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                app:srcCompat="@drawable/ic_camera"
+                android:padding="19dp"/>
+        </LinearLayout>
+        <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:gravity="center_horizontal"
-            android:orientation="horizontal">
+            android:gravity="center">
 
             <ImageView
-                android:id="@+id/flash_icon"
-                android:layout_width="wrap_content"
+                android:id="@+id/gallery_icon"
+                android:layout_width="35dp"
                 android:layout_height="wrap_content"
-                app:srcCompat="@drawable/ic_flash" />
+                android:adjustViewBounds="true"
+                android:clickable="true"
+                android:focusable="true"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                app:srcCompat="@drawable/ic_photo_library" />
         </LinearLayout>
 
     </LinearLayout>
