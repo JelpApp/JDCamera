@@ -45,7 +45,7 @@ public class SquareCameraFragment extends Fragment implements SurfaceHolder.Call
     public static final String CAMERA_ID_KEY = "camera_id";
     public static final String CAMERA_FLASH_KEY = "flash_mode";
     public static final String IMAGE_INFO = "image_info";
-
+    public static final int LOAD_IMAGE_RESULTS = 12;
     private static final int PICTURE_SIZE_MAX_WIDTH = 1280;
     private static final int PREVIEW_SIZE_MAX_WIDTH = 640;
 
@@ -185,13 +185,27 @@ public class SquareCameraFragment extends Fragment implements SurfaceHolder.Call
             txtmsj = (TextView) view.findViewById(R.id.txtMsj);
             txtmsj.setText(msj);
         }
+
+        boolean gallery = getArguments().getBoolean(CameraParams.GALLERY,true);
+        final ImageView galleryBtn = (ImageView)view.findViewById(R.id.gallery_icon);
+        galleryBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                startActivityForResult(i, LOAD_IMAGE_RESULTS);
+            }
+        });
+        if(gallery)
+            galleryBtn.setVisibility(View.VISIBLE);
+        else
+            galleryBtn.setVisibility(View.GONE);
     }
 
     private void setupFlashMode() {
         View view = getView();
         if (view == null) return;
 
-        final ImageView autoFlashIcon = (ImageView) view.findViewById(R.id.flash_icon);
+        final ImageView autoFlashIcon = (ImageView) view.findViewById(R.id.flash);
         if (Camera.Parameters.FLASH_MODE_AUTO.equalsIgnoreCase(mFlashMode)) {
             autoFlashIcon.setImageDrawable(ImageUtility.getDrawableCompat(getContext(),R.drawable.ic_flash_auto));
         } else if (Camera.Parameters.FLASH_MODE_ON.equalsIgnoreCase(mFlashMode)) {
@@ -488,8 +502,26 @@ public class SquareCameraFragment extends Fragment implements SurfaceHolder.Call
         if (resultCode != Activity.RESULT_OK) return;
 
         switch (requestCode) {
-            case 1:
+            case LOAD_IMAGE_RESULTS:
                 Uri imageUri = data.getData();
+                if(imageUri!=null){
+                    int rotation = getPhotoRotation();
+                    try {
+                        byte[] dataImage = ImageUtility.getBytes(getActivity().getContentResolver().openInputStream(imageUri));
+                        getFragmentManager()
+                                .beginTransaction()
+                                .replace(
+                                        R.id.fragment_container,
+                                        RectangleSavePhotoFragment.newInstance(dataImage, rotation-90, mImageParameters.createCopy(),getArguments()),
+                                        RectangleSavePhotoFragment.TAG)
+                                .addToBackStack(null)
+                                .commit();
+
+                        setSafeToTakePhoto(true);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
                 break;
 
             default:

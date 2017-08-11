@@ -101,6 +101,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 Bundle bundleSquare = new Bundle();
                 bundleSquare.putInt(CameraParams.OPTION,CameraParams.SQUARE);
                 bundleSquare.putString(CameraParams.MESSAGE,"Mensaje");
+                bundleSquare.putBoolean(CameraParams.GALLERY,false);
                 startCustomCameraIntent.putExtras(bundleSquare);
                 startActivityForResult(startCustomCameraIntent, REQUEST_CAMERA);
                 break;

@@ -26,13 +26,25 @@
 
     <TextView
         android:id="@+id/txtMsj"
-        android:layout_margin="5dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:textColor="#FFE6E6E6"
+        android:textColor="#f2f2f2"
         android:textSize="16sp"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="16dp"
         android:layout_toLeftOf="@+id/camera_tools_view"/>
+
+    <ImageView
+        android:id="@+id/flash"
+        android:layout_margin="16dp"
+        android:layout_width="35dp"
+        android:layout_height="wrap_content"
+        android:adjustViewBounds="true"
+        android:clickable="true"
+        android:focusable="true"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        app:srcCompat="@drawable/ic_flash" />
 
     <LinearLayout
         android:id="@+id/camera_tools_view"
@@ -46,35 +58,53 @@
         android:gravity="center">
 
         <LinearLayout
-            android:id="@+id/flash"
             android:layout_width="wrap_content"
             android:layout_height="0dp"
             android:layout_weight="1"
-            android:gravity="center_vertical"
-            android:orientation="horizontal">
+            android:gravity="center">
 
             <ImageView
-                android:id="@+id/flash_icon"
-                android:layout_width="wrap_content"
+                android:id="@+id/gallery_icon"
+                android:layout_width="35dp"
                 android:layout_height="wrap_content"
-                app:srcCompat="@drawable/ic_flash" />
+                android:adjustViewBounds="true"
+                android:clickable="true"
+                android:focusable="true"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                app:srcCompat="@drawable/ic_photo_library" />
         </LinearLayout>
 
-        <ImageView
-            android:id="@+id/capture_image_button"
+        <LinearLayout
             android:layout_width="70dp"
             android:layout_height="70dp"
-            android:background="@drawable/bg_camera"
-            app:srcCompat="@drawable/ic_camera"
-            android:padding="19dp"/>
-
-        <ImageView
-            android:id="@+id/change_camera"
+            android:background="@drawable/bg_camera">
+            <ImageView
+                android:id="@+id/capture_image_button"
+                android:layout_width="70dp"
+                android:layout_height="70dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                app:srcCompat="@drawable/ic_camera"
+                android:padding="19dp"/>
+        </LinearLayout>
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="0dp"
-            app:srcCompat="@drawable/ic_camera_rear"
-            android:layout_weight="1"/>
+            android:layout_weight="1"
+            android:gravity="center">
 
+            <ImageView
+                android:id="@+id/change_camera"
+                android:layout_width="35dp"
+                android:layout_height="wrap_content"
+                android:adjustViewBounds="true"
+                android:clickable="true"
+                android:focusable="true"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                app:srcCompat="@drawable/ic_camera_rear"
+                android:layout_weight="1"/>
+        </LinearLayout>
 
     </LinearLayout>
 

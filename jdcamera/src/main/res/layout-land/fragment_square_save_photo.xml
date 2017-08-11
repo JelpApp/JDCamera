@@ -21,26 +21,30 @@
         android:orientation="vertical"
         android:layout_alignParentRight="true"
         android:layout_centerVertical="true"
-        android:layout_width="wrap_content"
+        android:layout_width="50dp"
         android:layout_height="match_parent"
         android:gravity="center">
 
         <ImageButton
             android:id="@+id/save_photo"
-            android:layout_width="wrap_content"
+            android:layout_width="35dp"
             android:layout_height="wrap_content"
-            android:padding="10dp"
+            android:adjustViewBounds="true"
+            android:clickable="true"
+            android:focusable="true"
             app:srcCompat="@drawable/ic_check"
-            android:background="@android:color/transparent"
+            android:background="?attr/selectableItemBackgroundBorderless"
             android:layout_marginBottom="40dp"/>
 
         <ImageButton
             android:id="@+id/cancel"
-            android:layout_width="wrap_content"
+            android:layout_width="35dp"
             android:layout_height="wrap_content"
-            android:padding="10dp"
+            android:adjustViewBounds="true"
+            android:clickable="true"
+            android:focusable="true"
             app:srcCompat="@drawable/ic_cancel"
-            android:background="@android:color/transparent"
+            android:background="?attr/selectableItemBackgroundBorderless"
             android:onClick="onCancel"
             android:layout_marginTop="40dp"/>
     </LinearLayout>

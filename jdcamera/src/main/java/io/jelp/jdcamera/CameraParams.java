@@ -12,4 +12,5 @@ public class CameraParams {
     public static final String PICTURE_NAME = "picturename";
     public static final String MAX_WIDTH = "maxwidth";
     public static final String QUALITY = "quality";
+    public static final String GALLERY = "gallery";
 }
