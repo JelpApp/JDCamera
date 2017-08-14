@@ -36,6 +36,7 @@ import com.theartofdev.edmodo.cropper.CropImageView;
 import java.io.IOException;
 import java.util.List;
 
+import io.jelp.jdcamera.CameraActivity;
 import io.jelp.jdcamera.CameraParams;
 import io.jelp.jdcamera.CameraSettingPreferences;
 import io.jelp.jdcamera.R;
@@ -521,22 +522,7 @@ public class SquareCameraFragment extends Fragment implements SurfaceHolder.Call
                 if (resultCode == Activity.RESULT_OK) {
                     Uri resultUri = result.getUri();
                     if(resultUri!=null) {
-                        int rotation = getPhotoRotation();
-                        try {
-                            byte[] dataImage = ImageUtility.getBytes(getActivity().getContentResolver().openInputStream(resultUri));
-                            getFragmentManager()
-                                    .beginTransaction()
-                                    .replace(
-                                            R.id.fragment_container,
-                                            SquareSavePhotoFragment.newInstance(dataImage, rotation - 90, mImageParameters.createCopy()),
-                                            SquareSavePhotoFragment.TAG)
-                                    .addToBackStack(null)
-                                    .commit();
-
-                            setSafeToTakePhoto(true);
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
+                        ((CameraActivity) getActivity()).returnPhotoUri(ImageUtility.savePicture(getContext(),resultUri,getArguments()));
                     }
                 } else if (resultCode == CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE) {
                     Exception error = result.getError();

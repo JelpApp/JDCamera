@@ -63,6 +63,70 @@ public class ImageUtility {
         return bitmap;
     }
 
+    public static Uri savePicture(Context context,Uri uri,Bundle args){
+        int quality = 100;
+
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+        Bitmap bitmap = BitmapFactory.decodeFile(uri.getPath(), options);
+
+        if(args.getInt(CameraParams.QUALITY)!=0)
+            quality = args.getInt(CameraParams.QUALITY);
+
+        File mediaStorageDir = new File(
+                Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES),
+                context.getString(R.string.app_name)
+        );
+
+        if (!mediaStorageDir.exists()) {
+            if (!mediaStorageDir.mkdirs()) {
+                return null;
+            }
+        }
+
+        String pictureName = args.getString(CameraParams.PICTURE_NAME);
+        if(pictureName==null) {
+            String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+            pictureName = timeStamp;
+        }
+
+        File mediaFile = new File(
+                mediaStorageDir.getPath() + File.separator + "IMG_" + pictureName + ".jpg"
+        );
+
+        // Saving the bitmap
+        try {
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, out);
+
+            FileOutputStream stream = new FileOutputStream(mediaFile);
+            stream.write(out.toByteArray());
+            stream.close();
+
+        } catch (IOException exception) {
+            exception.printStackTrace();
+        }
+
+        // Mediascanner need to scan for the image saved
+        Intent mediaScannerIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+        Uri fileContentUri = Uri.fromFile(mediaFile);
+        mediaScannerIntent.setData(fileContentUri);
+        context.sendBroadcast(mediaScannerIntent);
+
+        File f = new Compressor.Builder(context)
+                .setQuality(quality)
+                .setDestinationDirectoryPath(mediaStorageDir.getPath())
+                .build()
+                .compressToFile(new File(fileContentUri.getPath()));
+
+        fileContentUri = Uri.fromFile(f);
+
+        if(mediaFile.exists())
+            mediaFile.delete();
+
+        return fileContentUri;
+    }
+
     public static Uri savePicture(Context context, Bitmap bitmap, boolean isSquare, Bundle args) {
         int cropHeight;
         int quality = 100;
