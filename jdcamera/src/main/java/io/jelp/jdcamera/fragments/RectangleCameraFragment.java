@@ -29,6 +29,9 @@ import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.theartofdev.edmodo.cropper.CropImage;
+import com.theartofdev.edmodo.cropper.CropImageView;
+
 import java.io.IOException;
 import java.util.List;
 
@@ -500,24 +503,41 @@ public class RectangleCameraFragment extends Fragment implements SurfaceHolder.C
         switch (requestCode) {
             case LOAD_IMAGE_RESULTS:
                 Uri imageUri = data.getData();
-                if(imageUri!=null){
-                    int rotation = getPhotoRotation();
-                    try {
-                        byte[] dataImage = ImageUtility.getBytes(getActivity().getContentResolver().openInputStream(imageUri));
-                        getFragmentManager()
-                                .beginTransaction()
-                                .replace(
-                                        R.id.fragment_container,
-                                        RectangleSavePhotoFragment.newInstance(dataImage, rotation-90, mImageParameters.createCopy(),getArguments()),
-                                        RectangleSavePhotoFragment.TAG)
-                                .addToBackStack(null)
-                                .commit();
-
-                        setSafeToTakePhoto(true);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
+                if(imageUri!=null) {
+                    CropImage.activity(imageUri)
+                            .setAspectRatio(2,3)
+                            .setFixAspectRatio(true)
+                            .setGuidelines(CropImageView.Guidelines.ON)
+                            .start(getContext(),RectangleCameraFragment.this);
                 }
+                break;
+
+            case CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE:
+                CropImage.ActivityResult result = CropImage.getActivityResult(data);
+                if (resultCode == Activity.RESULT_OK) {
+                    Uri resultUri = result.getUri();
+                    if(resultUri!=null) {
+                        int rotation = getPhotoRotation();
+                        try {
+                            byte[] dataImage = ImageUtility.getBytes(getActivity().getContentResolver().openInputStream(resultUri));
+                            getFragmentManager()
+                                    .beginTransaction()
+                                    .replace(
+                                            R.id.fragment_container,
+                                            RectangleSavePhotoFragment.newInstance(dataImage, rotation - 90, mImageParameters.createCopy(), getArguments()),
+                                            RectangleSavePhotoFragment.TAG)
+                                    .addToBackStack(null)
+                                    .commit();
+
+                            setSafeToTakePhoto(true);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                } else if (resultCode == CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE) {
+                    Exception error = result.getError();
+                }
+
                 break;
 
             default:

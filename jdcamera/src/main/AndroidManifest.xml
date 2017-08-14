@@ -6,6 +6,8 @@
             android:name=".RuntimePermissionActivity"
             android:theme="@style/CameraTheme.NoUI"></activity>
         <activity android:name=".CameraActivity"></activity>
+
+        <activity android:name="com.theartofdev.edmodo.cropper.CropImageActivity"></activity>
     </application>
 
 </manifest>

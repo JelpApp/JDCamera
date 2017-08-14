@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">JD camera</string>
     <string name="request_write_storage_permission_text">Approval is needed to save your photo on your device</string>
+    <string name="crop_image_menu_crop">Cortar</string>
 </resources>
