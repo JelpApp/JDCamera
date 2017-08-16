@@ -282,6 +282,9 @@ public class RectangleCameraFragment extends Fragment implements SurfaceHolder.C
         } catch (IOException e) {
             Log.d(TAG, "Can't start camera preview due to IOException " + e);
             e.printStackTrace();
+        } catch (Exception ex){
+            Log.d(TAG, "Can't start camera preview due to Exception " + ex);
+            ex.printStackTrace();
         }
     }
 
