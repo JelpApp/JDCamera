@@ -22,7 +22,7 @@ Add this in your module's `build.gradle` file:
 dependencies {
     // ... other dependencies
 
-    compile 'io.jelp:jdcamera:0.7'
+    compile 'io.jelp:jdcamera:1.0'
 }
 ```
 
