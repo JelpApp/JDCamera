@@ -16,7 +16,10 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.graphics.drawable.VectorDrawableCompat;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.OrientationEventListener;
@@ -26,12 +29,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.animation.AccelerateDecelerateInterpolator;
+import android.view.animation.TranslateAnimation;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.theartofdev.edmodo.cropper.CropImage;
 import com.theartofdev.edmodo.cropper.CropImageView;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
@@ -44,16 +50,15 @@ import io.jelp.jdcamera.tools.ImageParameters;
 import io.jelp.jdcamera.tools.ImageUtility;
 import io.jelp.jdcamera.tools.ResizeAnimation;
 
-public class RectangleCameraFragment extends Fragment implements SurfaceHolder.Callback, Camera.PictureCallback{
+public class RectangleCameraFragment extends Fragment implements SurfaceHolder.Callback, Camera.PictureCallback,ImagesAdapter.OnItemClickListener{
     public static final String TAG = RectangleCameraFragment.class.getSimpleName();
     public static final String CAMERA_ID_KEY = "camera_id";
     public static final String CAMERA_FLASH_KEY = "flash_mode";
     public static final String IMAGE_INFO = "image_info";
-    public static final int LOAD_IMAGE_RESULTS = 12;
 
     private static final int PICTURE_SIZE_MAX_WIDTH = 1280;
     private static final int PREVIEW_SIZE_MAX_WIDTH = 640;
-
+    private static final int LOAD_IMAGE_RESULTS = 23;
     private int mCameraID;
     private String mFlashMode;
     private Camera mCamera;
@@ -66,6 +71,11 @@ public class RectangleCameraFragment extends Fragment implements SurfaceHolder.C
 
     private RectangleCameraFragment.CameraOrientationListener mOrientationListener;
     private TextView txtmsj;
+    private LinearLayout lyImages;
+    private RecyclerView rvImages;
+    private LinearLayoutManager layoutManager;
+    private ImageView imgHideImages;
+    private ImageView btnGallery;
     public static Fragment newInstance(Bundle bundle) {
         RectangleCameraFragment fragment = new RectangleCameraFragment();
         fragment.setArguments(bundle);
@@ -83,9 +93,6 @@ public class RectangleCameraFragment extends Fragment implements SurfaceHolder.C
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        // Restore your state here because a double rotation with this fragment
-        // in the backstack will cause improper state restoration
-        // onCreate() -> onSavedInstanceState() instead of going through onCreateView()
         if (savedInstanceState == null) {
             mCameraID = getBackCameraID();
             mFlashMode = CameraSettingPreferences.getCameraFlashMode(getActivity());
@@ -113,9 +120,9 @@ public class RectangleCameraFragment extends Fragment implements SurfaceHolder.C
 
         final View topCoverView = view.findViewById(R.id.cover_top_view);
         final View btnCoverView = view.findViewById(R.id.cover_bottom_view);
+        imgHideImages = (ImageView)view.findViewById(R.id.imgHideImages);
 
-        mImageParameters.mIsPortrait =
-                getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT;
+        mImageParameters.mIsPortrait = getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT;
 
         if (savedInstanceState == null) {
             ViewTreeObserver observer = mPreviewView.getViewTreeObserver();
@@ -146,7 +153,7 @@ public class RectangleCameraFragment extends Fragment implements SurfaceHolder.C
             }
         }
 
-        final ImageView swapCameraBtn = (ImageView) view.findViewById(R.id.change_camera);
+        final ImageView swapCameraBtn = (ImageView) view.findViewById(R.id.btnChangeCamera);
         swapCameraBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -159,7 +166,7 @@ public class RectangleCameraFragment extends Fragment implements SurfaceHolder.C
             }
         });
 
-        final View changeCameraFlashModeBtn = view.findViewById(R.id.flash);
+        final View changeCameraFlashModeBtn = view.findViewById(R.id.btnFlash);
         changeCameraFlashModeBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -177,7 +184,7 @@ public class RectangleCameraFragment extends Fragment implements SurfaceHolder.C
         });
         setupFlashMode();
 
-        final ImageView takePhotoBtn = (ImageView) view.findViewById(R.id.capture_image_button);
+        final ImageView takePhotoBtn = (ImageView) view.findViewById(R.id.btnCapture);
         takePhotoBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -191,26 +198,55 @@ public class RectangleCameraFragment extends Fragment implements SurfaceHolder.C
             txtmsj.setText(msj);
         }
 
-        boolean gallery = getArguments().getBoolean(CameraParams.GALLERY,true);
-        final ImageView galleryBtn = (ImageView)view.findViewById(R.id.gallery_icon);
-        galleryBtn.setOnClickListener(new View.OnClickListener() {
+        boolean gallery = getArguments().getBoolean(CameraParams.GALLERY,false);
+        lyImages = (LinearLayout)view.findViewById(R.id.lyImages);
+        rvImages = (RecyclerView)view.findViewById(R.id.rvImages);
+        btnGallery = (ImageView)view.findViewById(R.id.btnGallery);
+        if(gallery) {
+            layoutManager = new LinearLayoutManager(getContext());
+            layoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);
+            rvImages.setLayoutManager(layoutManager);
+            ImagesAdapter imagesAdapter = new ImagesAdapter(getContext(), ImageUtility.getAllShownImagesPath(getContext()), this);
+            rvImages.setAdapter(imagesAdapter);
+            btnGallery.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent i = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                    startActivityForResult(i, LOAD_IMAGE_RESULTS);
+                }
+            });
+        }else {
+            lyImages.setVisibility(View.GONE);
+            btnGallery.setVisibility(View.GONE);
+        }
+
+        imgHideImages.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
-                Intent i = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-                startActivityForResult(i, LOAD_IMAGE_RESULTS);
+            public void onClick(View view) {
+                if(rvImages.isShown()){
+                    TranslateAnimation animate = new TranslateAnimation(0,0,0,rvImages.getHeight());
+                    animate.setDuration(500);
+                    animate.setFillAfter(true);
+                    rvImages.startAnimation(animate);
+                    rvImages.setVisibility(View.GONE);
+                    imgHideImages.setImageDrawable(VectorDrawableCompat.create(getResources(),R.drawable.chevron_up,null));
+                }else {
+                    TranslateAnimation animate = new TranslateAnimation(0,0,rvImages.getHeight(),0);
+                    animate.setDuration(500);
+                    animate.setFillAfter(true);
+                    rvImages.startAnimation(animate);
+                    rvImages.setVisibility(View.VISIBLE);
+                    imgHideImages.setImageDrawable(VectorDrawableCompat.create(getResources(),R.drawable.chevron_down,null));
+                }
             }
         });
-        if(gallery)
-            galleryBtn.setVisibility(View.VISIBLE);
-        else
-            galleryBtn.setVisibility(View.GONE);
     }
 
     private void setupFlashMode() {
         View view = getView();
         if (view == null) return;
 
-        final ImageView autoFlashIcon = (ImageView) view.findViewById(R.id.flash);
+        final ImageView autoFlashIcon = (ImageView) view.findViewById(R.id.btnFlash);
         if (Camera.Parameters.FLASH_MODE_AUTO.equalsIgnoreCase(mFlashMode)) {
             autoFlashIcon.setImageDrawable(ImageUtility.getDrawableCompat(getContext(),R.drawable.ic_flash_auto));
         } else if (Camera.Parameters.FLASH_MODE_ON.equalsIgnoreCase(mFlashMode)) {
@@ -357,7 +393,8 @@ public class RectangleCameraFragment extends Fragment implements SurfaceHolder.C
         mImageParameters.mDisplayOrientation = displayOrientation;
         mImageParameters.mLayoutOrientation = degrees;
 
-        mCamera.setDisplayOrientation(mImageParameters.mDisplayOrientation);
+        if(mCamera!=null)
+            mCamera.setDisplayOrientation(displayOrientation);
     }
 
     /**
@@ -379,7 +416,7 @@ public class RectangleCameraFragment extends Fragment implements SurfaceHolder.C
             parameters.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);
         }
 
-        final View changeCameraFlashModeBtn = getView().findViewById(R.id.flash);
+        final View changeCameraFlashModeBtn = getView().findViewById(R.id.btnFlash);
         List<String> flashModes = parameters.getSupportedFlashModes();
         if (flashModes != null && flashModes.contains(mFlashMode)) {
             parameters.setFlashMode(mFlashMode);
@@ -505,18 +542,19 @@ public class RectangleCameraFragment extends Fragment implements SurfaceHolder.C
         if (resultCode != Activity.RESULT_OK) return;
 
         switch (requestCode) {
-            case LOAD_IMAGE_RESULTS:
-                Uri imageUri = data.getData();
-                if(imageUri!=null) {
-                    CropImage.activity(imageUri)
-                            .setAspectRatio(2,3)
-                            .setFixAspectRatio(true)
-                            .setGuidelines(CropImageView.Guidelines.ON)
-                            .start(getContext(),RectangleCameraFragment.this);
-                }
-                break;
+                case LOAD_IMAGE_RESULTS:
+                    Uri imageUri = data.getData();
+                    if(imageUri!=null) {
+                        CropImage.activity(imageUri)
+                                .setAspectRatio(2,3)
+                                .setFixAspectRatio(true)
+                                .setGuidelines(CropImageView.Guidelines.ON)
+                                .start(getContext(),RectangleCameraFragment.this);
+                    }
+                    break;
 
-            case CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE:
+
+                case CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE:
                 CropImage.ActivityResult result = CropImage.getActivityResult(data);
                 if (resultCode == Activity.RESULT_OK) {
                     Uri resultUri = result.getUri();
@@ -542,8 +580,6 @@ public class RectangleCameraFragment extends Fragment implements SurfaceHolder.C
     @Override
     public void onPictureTaken(byte[] data, Camera camera) {
         int rotation = getPhotoRotation();
-//        Log.d(TAG, "normal orientation: " + orientation);
-//        Log.d(TAG, "Rotate Picture by: " + rotation);
         getFragmentManager()
                 .beginTransaction()
                 .replace(
@@ -569,6 +605,17 @@ public class RectangleCameraFragment extends Fragment implements SurfaceHolder.C
         }
 
         return rotation;
+    }
+
+    @Override
+    public void onItemImageClicked(File file) {
+        if(file!=null) {
+            CropImage.activity(Uri.fromFile(file))
+                    .setAspectRatio(2,3)
+                    .setFixAspectRatio(true)
+                    .setGuidelines(CropImageView.Guidelines.ON)
+                    .start(getContext(),RectangleCameraFragment.this);
+        }
     }
 
     /**

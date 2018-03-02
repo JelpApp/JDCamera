@@ -1,51 +1,53 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@android:color/black">
 
     <View
         android:id="@+id/topView"
         android:layout_width="match_parent"
-        android:layout_height="0dp"/>
+        android:layout_height="0dp" />
 
     <io.jelp.jdcamera.controls.SquareImageView
         android:id="@+id/photo"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@id/topView"
-        android:scaleType="centerCrop"/>
+        android:scaleType="centerCrop" />
 
     <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:orientation="horizontal"
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:gravity="center">
+        android:gravity="center"
+        android:orientation="horizontal">
 
         <ImageButton
             android:id="@+id/cancel"
-            android:layout_width="35dp"
+            android:layout_width="45dp"
             android:layout_height="wrap_content"
+            android:layout_marginRight="40dp"
+            android:adjustViewBounds="true"
+            android:background="?attr/selectableItemBackgroundBorderless"
             android:clickable="true"
             android:focusable="true"
-            android:adjustViewBounds="true"
-            app:srcCompat="@drawable/ic_cancel"
-            android:background="?attr/selectableItemBackgroundBorderless"
             android:onClick="onCancel"
-            android:layout_marginRight="40dp"/>
+            android:scaleType="center"
+            app:srcCompat="@drawable/ic_cancel" />
 
         <ImageButton
             android:id="@+id/save_photo"
-            android:layout_width="35dp"
+            android:layout_width="45dp"
             android:layout_height="wrap_content"
+            android:layout_marginLeft="40dp"
             android:adjustViewBounds="true"
+            android:background="?attr/selectableItemBackgroundBorderless"
             android:clickable="true"
             android:focusable="true"
-            app:srcCompat="@drawable/ic_check"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:layout_marginLeft="40dp"/>
+            android:scaleType="center"
+            app:srcCompat="@drawable/ic_check" />
     </LinearLayout>
 </RelativeLayout>

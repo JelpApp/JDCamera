@@ -3,8 +3,10 @@ package io.jelp.jdcamera.tools;
 /**
  * Created by angel on 1/20/17.
  */
+
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
@@ -15,7 +17,8 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
-import android.support.v7.widget.AppCompatDrawableManager;
+import android.provider.MediaStore;
+import android.support.graphics.drawable.VectorDrawableCompat;
 import android.util.Base64;
 import android.view.Display;
 import android.view.WindowManager;
@@ -26,6 +29,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 
 import io.jelp.jdcamera.CameraParams;
@@ -33,17 +37,6 @@ import io.jelp.jdcamera.R;
 import io.jelp.jdcamera.tools.compressor.Compressor;
 
 public class ImageUtility {
-    public static String convertBitmapToString(Bitmap bitmap) {
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 80, out);
-
-        return Base64.encodeToString(out.toByteArray(), Base64.DEFAULT);
-    }
-
-    public static byte[] convertBitmapStringToByteArray(String bitmapByteString) {
-        return Base64.decode(bitmapByteString, Base64.DEFAULT);
-    }
-
     public static Bitmap rotatePicture(Context context, int rotation, byte[] data) {
         Bitmap bitmap = decodeSampledBitmapFromByte(context, data);
 
@@ -63,14 +56,14 @@ public class ImageUtility {
         return bitmap;
     }
 
-    public static Uri savePicture(Context context,Uri uri,Bundle args){
+    public static Uri savePicture(Context context, Uri uri, Bundle args) {
         int quality = 100;
 
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inPreferredConfig = Bitmap.Config.ARGB_8888;
         Bitmap bitmap = BitmapFactory.decodeFile(uri.getPath(), options);
 
-        if(args.getInt(CameraParams.QUALITY)!=0)
+        if (args.getInt(CameraParams.QUALITY) != 0)
             quality = args.getInt(CameraParams.QUALITY);
 
         File mediaStorageDir = new File(
@@ -85,7 +78,7 @@ public class ImageUtility {
         }
 
         String pictureName = args.getString(CameraParams.PICTURE_NAME);
-        if(pictureName==null) {
+        if (pictureName == null) {
             String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
             pictureName = timeStamp;
         }
@@ -121,7 +114,7 @@ public class ImageUtility {
 
         fileContentUri = Uri.fromFile(f);
 
-        if(mediaFile.exists())
+        if (mediaFile.exists())
             mediaFile.delete();
 
         return fileContentUri;
@@ -136,7 +129,7 @@ public class ImageUtility {
             cropHeight = bitmap.getHeight();
 
         float maxWidth = cropHeight;
-        if(isSquare)
+        if (isSquare)
             bitmap = ThumbnailUtils.extractThumbnail(bitmap, cropHeight, cropHeight, ThumbnailUtils.OPTIONS_RECYCLE_INPUT);
 
         File mediaStorageDir = new File(
@@ -151,7 +144,7 @@ public class ImageUtility {
         }
 
         String pictureName = args.getString(CameraParams.PICTURE_NAME);
-        if(pictureName==null) {
+        if (pictureName == null) {
             String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
             pictureName = timeStamp;
         }
@@ -180,10 +173,10 @@ public class ImageUtility {
         context.sendBroadcast(mediaScannerIntent);
 
 
-        if(args.getInt(CameraParams.MAX_WIDTH)!=0)
+        if (args.getInt(CameraParams.MAX_WIDTH) != 0)
             maxWidth = args.getInt(CameraParams.MAX_WIDTH);
 
-        if(args.getInt(CameraParams.QUALITY)!=0)
+        if (args.getInt(CameraParams.QUALITY) != 0)
             quality = args.getInt(CameraParams.QUALITY);
 
         File f = new Compressor.Builder(context)
@@ -195,7 +188,7 @@ public class ImageUtility {
 
         fileContentUri = Uri.fromFile(f);
 
-        if(mediaFile.exists())
+        if (mediaFile.exists())
             mediaFile.delete();
 
         return fileContentUri;
@@ -219,6 +212,7 @@ public class ImageUtility {
 
         return BitmapFactory.decodeFile(path, options);
     }
+
     /**
      * Decode and sample down a bitmap from a byte stream
      */
@@ -265,7 +259,7 @@ public class ImageUtility {
      * bitmaps using the decode* methods from {@link BitmapFactory}. This implementation calculates
      * the closest inSampleSize that is a power of 2 and will result in the final decoded bitmap
      * having a width and height equal to or larger than the requested width and height
-     *
+     * <p>
      * The function rounds up the sample size to a power of 2 or multiple
      * of 8 because BitmapFactory only honors sample size this way.
      * For example, BitmapFactory downsamples an image by 2 even though the
@@ -317,18 +311,31 @@ public class ImageUtility {
     }
 
     public static Drawable getDrawableCompat(Context context, int drawable) {
-        return AppCompatDrawableManager.get().getDrawable(context, drawable);
+        return VectorDrawableCompat.create(context.getResources(), drawable, null);
     }
 
-    public static byte[] getBytes(InputStream inputStream) throws IOException {
-        ByteArrayOutputStream byteBuffer = new ByteArrayOutputStream();
-        int bufferSize = 1024;
-        byte[] buffer = new byte[bufferSize];
+    public static ArrayList<String> getAllShownImagesPath(Context context) {
+        Uri uri;
+        Cursor cursor;
+        int column_index_data, column_index_folder_name;
+        ArrayList<String> listOfAllImages = new ArrayList<String>();
+        String absolutePathOfImage = null;
+        uri = android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
 
-        int len = 0;
-        while ((len = inputStream.read(buffer)) != -1) {
-            byteBuffer.write(buffer, 0, len);
+        String[] projection = {MediaStore.MediaColumns.DATA,
+                MediaStore.Images.Media.BUCKET_DISPLAY_NAME};
+
+        cursor = context.getContentResolver().query(uri, projection, null,
+                null, null);
+
+        column_index_data = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DATA);
+        column_index_folder_name = cursor
+                .getColumnIndexOrThrow(MediaStore.Images.Media.BUCKET_DISPLAY_NAME);
+        while (cursor.moveToNext()) {
+            absolutePathOfImage = cursor.getString(column_index_data);
+
+            listOfAllImages.add(absolutePathOfImage);
         }
-        return byteBuffer.toByteArray();
+        return listOfAllImages;
     }
 }

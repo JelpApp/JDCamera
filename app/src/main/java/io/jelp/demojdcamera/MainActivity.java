@@ -113,6 +113,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 bundleRectangle.putString(CameraParams.MESSAGE,"Foto del vehículo");
                 bundleRectangle.putString(CameraParams.PICTURE_NAME,"15_Front");
                 bundleRectangle.putInt(CameraParams.MAX_WIDTH,720);
+                bundleRectangle.putBoolean(CameraParams.GALLERY,true);
                 bundleRectangle.putInt(CameraParams.QUALITY,80);
                 startCustomCamera2Intent.putExtras(bundleRectangle);
                 startActivityForResult(startCustomCamera2Intent, REQUEST_CAMERA);
